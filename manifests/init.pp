@@ -464,10 +464,11 @@ class ssh (
     }
   }
 
-  if "${::ssh_version}" =~ /^OpenSSH/  { # lint:ignore:only_variable_string
-    $ssh_version_array = split($::ssh_version_numeric, '\.')
-    $ssh_version_maj_int = 0 + $ssh_version_array[0]
-    $ssh_version_min_int = 0 + $ssh_version_array[1]
+  if $facts['ssh_version'] =~ /^OpenSSH/ {
+    $ssh_version_array      = split($facts['ssh_version_numeric'], '\.')
+    $ssh_version_maj_int    = Integer($ssh_version_array[0])
+    $ssh_version_min_int    = Integer($ssh_version_array[1])
+
     if $ssh_version_maj_int > 5 {
       $default_ssh_config_use_roaming = 'no'
     } elsif $ssh_version_maj_int == 5 and $ssh_version_min_int >= 4 {
@@ -476,7 +477,7 @@ class ssh (
       $default_ssh_config_use_roaming = 'unset'
     }
   } else {
-      $default_ssh_config_use_roaming = 'unset'
+    $default_ssh_config_use_roaming = 'unset'
   }
 
   if $packages == 'USE_DEFAULTS' {
